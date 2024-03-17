@@ -1,4 +1,5 @@
 #include <vector>
+#include "ToMatrix.hpp"
 
 std::vector<int> ToMatrix(std::vector<float> point)
 {
@@ -14,5 +15,5 @@ int flToMatrix(float num, bool x)
   num = num / 2;
   num += 0.5f;
   
-  return (x) ? (int)num * 12 : (int)num * 8;
+  return (x) ? round(num * 11) : round(num * 7);
 }

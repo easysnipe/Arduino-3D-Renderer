@@ -1,14 +1,11 @@
 #include "Arduino_LED_Matrix.h"
 #include <vector>
 #include <utility>
-ArduinoLEDMatrix matrix;
+#include "ThreeD.hpp"
+#include "Tools.hpp"
+#include "ToMatrix.hpp"
 
-std::vector<std::vector<float>> MatrixMult(std::vector<std::vector<float>> matrix1, std::vector<std::vector<float>> matrix2);
-std::vector<int> ToMatrix(std::vector<float> point);
-void printVect(std::vector<float> nums);
-std::vector<float> transform(std::vector<float> point, std::vector<float> rotations);
-std::vector<float> projectTo2D(std::vector<float> point, std::vector<float> pinhole);
-void printVec2D(std::vector<std::vector<float>> vec2D);
+ArduinoLEDMatrix matrix;
 
 byte frame[8][12] =
 {
@@ -22,7 +19,7 @@ byte frame[8][12] =
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-
+// Cube Vertices Defined in NDC
 std::vector<std::vector<float>> points =
 {
   // Front
@@ -39,9 +36,8 @@ std::vector<std::vector<float>> points =
 
 void setup() 
 {
-  Serial.begin(9600);
+  Serial.begin(57600);
   matrix.begin();
-
 }
 
 void clearFrame()
@@ -58,29 +54,30 @@ void clearFrame()
 void loop() 
 {
   std::vector<float> rotation = {0.0f, (float)millis() / 1000.0f, 0.0f};
-  std::vector<float> pinhole = {0.0f, -10.0f, 0.0f};
+  std::vector<float> pinhole = {0.0f, 0.0f, -1.0f};
   
-  Serial.println("Clearing frame");
   clearFrame();
   for (int i = 0; i < points.size(); ++i)
   {
     std::vector<float> point = points[i];
-    Serial.println("Transforming Point " + i);
+
+    // Apply rotation to points
     point = transform(point, rotation);
-    Serial.println("Projecting Point " + i);
+    point[2] += 1.25f;
+
+    // Project to 2D
     point = projectTo2D(point, pinhole);
     
     //Convert to screenspace
-    Serial.println("Converting To ScreenSpace " + i);
     std::vector<int> screenP = ToMatrix(point);
-    if ((point[0] > 0 && point[0] < 8) && (point[1] > 0 && point[1] < 12))
+    
+    // Add to bitmap if within range
+    if ((screenP[0] >= 0 && screenP[0] < 12) && (screenP[1] >= 0 && screenP[1] < 8))
     {
-      frame[screenP[0]][screenP[1]] = 1;
-    }
-    else
-    {
-      printVect(point);
+      frame[screenP[1]][screenP[0]] = 1;
     }
   }
+
   matrix.renderBitmap(frame, 8, 12);
 }
+
