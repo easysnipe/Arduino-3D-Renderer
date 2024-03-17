@@ -1,18 +1,12 @@
 #include <vector>
 
-std::vector<std::vector<int>> ToMatrix(std::vector<std::vector<float>> points)
+std::vector<int> ToMatrix(std::vector<float> point)
 {
-  std::vector<std::vector<int>> matrixPoints;
-  for (int i = 0; i < points.size(); ++i)
-  {
-    std::vector<int> point;
-    point.push_back(flToMatrix(points[i][0], true));
-    point.push_back(flToMatrix(points[i][1], false));
+  std::vector<int> screenP;
+  screenP.push_back(flToMatrix(point[0], true));
+  screenP.push_back(flToMatrix(point[1], false));
 
-    matrixPoints.push_back(point);
-  }
-
-  return matrixPoints;
+  return screenP;
 }
 
 int flToMatrix(float num, bool x)

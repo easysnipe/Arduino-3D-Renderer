@@ -27,17 +27,23 @@ std::vector<float> transform(std::vector<float> point, std::vector<float> rotati
     std::vector<float> row;
     row.push_back(point[i]);
   }
+  Serial.println(vec3[0].size());
 
+  Serial.println("Multiplying First Matrix");
   rotx = MatrixMult(rotx, roty);
+  Serial.println("Multiplying Second Matrix");
   rotz = MatrixMult(rotx, rotz);
+  Serial.println("Multiplying Third Matrix");
   vec3 = MatrixMult(rotz, vec3);
 
+  Serial.println("2D to 1D");
   std::vector<float> transPoint;
   for (int i = 0; i < 3; ++i)
   {
     transPoint.push_back(vec3[i][0]);
   }
 
+  Serial.println("Done transformig!");
   return transPoint;
 }
 
